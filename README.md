@@ -1,5 +1,5 @@
 # shortcut.py
-A python-based interface for shortcut-pages on Github.
+A python-based interface for [shortcut-pages](https://github.com/mt-empty/shortcut-pages) on Github.
 
 ## Basic Usage
 To see the shortcuts for a given program, type:
@@ -12,7 +12,7 @@ This program is written with Python 3.9+ however, versions as early as Python 3.
 
 ## Setup
 - Firstly, clone the repository to your computer
-- Download the page directories `GUI` and/or `nonGUI` from the (https://github.com/mt-empty/shortcut-pages)[shortcut-pages] repo
+- Download the page directories `GUI` and/or `nonGUI` from the [shortcut-pages](https://github.com/mt-empty/shortcut-pages) repo
 - Move the individual pages into a directory called `pages` in the shortcuts.py root folder.
 An automated process is in the pipeline.
 
