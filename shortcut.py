@@ -1,15 +1,14 @@
 #!/usr/bin/python
 
-import sys
+import argparse
 
 PAGE_DIR = "./pages"
-COLORS = True
-SHOW_META = False
-VERSION = "0.1.0"
+VERSION = "0.2.0"
+ARGS = None
 
 
 def color_func(*colors):
-    if COLORS:
+    if not ARGS.no_colors:
         prefix = ""
         for color in colors:
             prefix += f"\033[{color}m"
@@ -35,8 +34,8 @@ def parse_md(raw_text):
 
     return formatted
 
+
 def parse_md_line(line):
-    global SHOW_META
     f_title = color_func("96", "1")
     f_subtitle = color_func("96", "4")
     f_shortcut = color_func("92")
@@ -45,7 +44,7 @@ def parse_md_line(line):
 
     if len(line) > 0:
         if line[0] == ">":
-            return f_meta(line) if SHOW_META else ""
+            return f_meta(line) if ARGS.meta else ""
         elif line[0] == "#":
             return f"\n{f_title(line.lstrip('# '))}\n"
         elif line[0] == "$":
@@ -59,18 +58,23 @@ def parse_md_line(line):
     return ""
 
 
-def main():
-    if len(sys.argv) > 1:
-        arg = sys.argv[1]
-        print(parse_md(read_page(arg)))
-    else:
-        show_help()
+def parse_arguments():
+    global ARGS
+    parser = argparse.ArgumentParser(usage='%(prog)s [options] page', description="A python-based interface for "
+                                                                                  "shortcut-pages on Github.\n")
+    parser.add_argument("-V", "--version", help="Displays the current version", action="version", version=VERSION)
+    parser.add_argument("-m", "--meta", help="Includes the metadata/comments included on a page", action="store_true")
+    parser.add_argument("--no-colors", help="Disables colored output", action="store_true")
+    parser.add_argument("--raw", help="Show the raw, unformatted output", action="store_true")
+    parser.add_argument("page", help="Name of the page to lookup")
+    ARGS = parser.parse_args()
 
-def show_help():
-    global VERSION
-    print(f"shortcut.py\t{VERSION}")
-    print("Usage: shortcut.py [PAGE_NAME]\n")
-    print("A python-based interface for shortcut-pages on Github.")
+
+def main():
+    parse_arguments()
+    result = read_page(ARGS.page)
+    print(result if ARGS.raw else parse_md(result))
+    return 0
 
 if __name__ == "__main__":
     main()
