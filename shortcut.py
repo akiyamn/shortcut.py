@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
 import argparse
+import os
 
-PAGE_DIR = "./pages"
-VERSION = "0.2.0"
+HERE = os.path.dirname(os.path.realpath(__file__))
+PAGE_DIR = f"{HERE}/pages"
+VERSION = "0.2.1"
 ARGS = None
 
 
