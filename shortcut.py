@@ -10,6 +10,7 @@ PAGE_FILE_EXT = ".md"
 VERSION = "0.3.0"
 ARGS = None
 
+
 class ListAction(argparse.Action):
     """
     An argparse action which lists every page then quits
@@ -104,7 +105,7 @@ def parse_arguments():
                                                                                   "shortcut-pages on Github.\n")
     parser.add_argument("-V", "--version", help="Displays the current version", action="version", version=VERSION)
     parser.add_argument("-m", "--meta", help="Includes the metadata/comments included on a page", action="store_true")
-    parser.add_argument("-l", "--list", help="Lists all pages accessible", action=ListAction, nargs="?")
+    parser.add_argument("-l", "--list", help="Lists all pages accessible", action=ListAction, metavar="")
     parser.add_argument("--no-colors", help="Disables colored output", action="store_true", default=no_color_env)
     parser.add_argument("--raw", help="Show the raw, unformatted output", action="store_true")
     parser.add_argument("page", help="Name of the page to lookup")
