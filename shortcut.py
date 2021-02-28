@@ -7,7 +7,7 @@ import os
 HERE = os.path.dirname(os.path.realpath(__file__))
 PAGE_DIR = f"{HERE}/pages"
 PAGE_FILE_EXT = ".md"
-VERSION = "0.2.1"
+VERSION = "0.3.0"
 ARGS = None
 
 class ListAction(argparse.Action):
@@ -119,6 +119,7 @@ def main():
     result = read_page(ARGS.page)
     print(result if ARGS.raw else parse_md(result))
     return 0
+
 
 if __name__ == "__main__":
     main()
