@@ -10,8 +10,20 @@ PAGE_FILE_EXT = ".md"
 VERSION = "0.2.1"
 ARGS = None
 
+class ListAction(argparse.Action):
+    """
+    An argparse action which lists every page then quits
+    """
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_pages()
+        parser.exit()
+
 
 def color_func(*colors):
+    """
+    Given a list of integers representing ANSI colors, returns a function which transforms text into those colors
+    The resulting function takes one argument which is a string of text and returns the ANSI formatted text
+    """
     if not ARGS.no_colors:
         prefix = ""
         for color in colors:
@@ -22,6 +34,9 @@ def color_func(*colors):
 
 
 def read_page(query):
+    """
+    Returns the raw page text from a given search query. (e.g. "c" -> text in "pages/c.md")
+    """
     page_path = f"{PAGE_DIR}/{query}{PAGE_FILE_EXT}"
     with open(page_path, "r") as file:
         page_data = file.read()
@@ -29,6 +44,9 @@ def read_page(query):
 
 
 def parse_md(raw_text):
+    """
+    Parses the raw markdown text, returning pretty output including ANSI colors (if desired)
+    """
     formatted = ""
     lines = raw_text.split("\n")
 
@@ -40,6 +58,9 @@ def parse_md(raw_text):
 
 
 def parse_md_line(line):
+    """
+    Parse and return one line of markdown formatted text
+    """
     f_title = color_func("96", "1")
     f_subtitle = color_func("96", "4")
     f_shortcut = color_func("92")
@@ -48,11 +69,11 @@ def parse_md_line(line):
 
     if len(line) > 0:
         if line[0] == ">":
-            return f_meta(line) if ARGS.meta else ""
+            return f_meta(line) if ARGS.meta else ""  # Parse comments starting with '> '
         elif line[0] == "#":
-            return f"\n{f_title(line.lstrip('# '))}\n"
+            return f"\n{f_title(line.lstrip('# '))}\n"  # Parse titles starting with '# '
         elif line[0] == "$":
-            return f"\n{f_subtitle(line.lstrip('$ '))}\n"
+            return f"\n{f_subtitle(line.lstrip('$ '))}\n"  # Parse subtitles starting with '$ '
         else:
             no_spacing = line.replace("  ", "")
             parts = no_spacing.split("{{")
@@ -63,19 +84,20 @@ def parse_md_line(line):
 
 
 def list_pages():
+    """
+    Print out a sorted list of all available pages excluding symlinked pages
+    """
     pages = os.listdir(PAGE_DIR)
     pages.sort()
     for page in pages:
         symlink = os.path.islink(PAGE_DIR + "/" + page)
-        if page[-len(PAGE_FILE_EXT):] == PAGE_FILE_EXT and not symlink:
-                print(page)
-
-class ListAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        list_pages()
-        parser.exit()
+        if page[-len(PAGE_FILE_EXT):] == PAGE_FILE_EXT and not symlink: # Is it not a symlink and ends with .md?
+            print(page)
 
 def parse_arguments():
+    """
+    Parse the arguments provided to the program and return the resulting argparse Namespace
+    """
     global ARGS
     no_color_env = "NO_COLOR" in os.environ
     parser = argparse.ArgumentParser(usage='%(prog)s [options] page', description="A python-based interface for "
@@ -90,8 +112,10 @@ def parse_arguments():
 
 
 def main():
+    """
+    The main function which is called on start
+    """
     parse_arguments()
-    list_pages()
     result = read_page(ARGS.page)
     print(result if ARGS.raw else parse_md(result))
     return 0
