@@ -62,11 +62,12 @@ def parse_md_line(line):
 
 def parse_arguments():
     global ARGS
+    no_color_env = "NO_COLOR" in os.environ
     parser = argparse.ArgumentParser(usage='%(prog)s [options] page', description="A python-based interface for "
                                                                                   "shortcut-pages on Github.\n")
     parser.add_argument("-V", "--version", help="Displays the current version", action="version", version=VERSION)
     parser.add_argument("-m", "--meta", help="Includes the metadata/comments included on a page", action="store_true")
-    parser.add_argument("--no-colors", help="Disables colored output", action="store_true")
+    parser.add_argument("--no-colors", help="Disables colored output", action="store_true", default=no_color_env)
     parser.add_argument("--raw", help="Show the raw, unformatted output", action="store_true")
     parser.add_argument("page", help="Name of the page to lookup")
     ARGS = parser.parse_args()
