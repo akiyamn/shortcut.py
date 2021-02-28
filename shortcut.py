@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 import argparse
+from pathlib import Path
 import os
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 PAGE_DIR = f"{HERE}/pages"
+PAGE_FILE_EXT = ".md"
 VERSION = "0.2.1"
 ARGS = None
 
@@ -20,7 +22,7 @@ def color_func(*colors):
 
 
 def read_page(query):
-    page_path = f"{PAGE_DIR}/{query}.md"
+    page_path = f"{PAGE_DIR}/{query}{PAGE_FILE_EXT}"
     with open(page_path, "r") as file:
         page_data = file.read()
     return page_data
@@ -60,6 +62,19 @@ def parse_md_line(line):
     return ""
 
 
+def list_pages():
+    pages = os.listdir(PAGE_DIR)
+    pages.sort()
+    for page in pages:
+        symlink = os.path.islink(PAGE_DIR + "/" + page)
+        if page[-len(PAGE_FILE_EXT):] == PAGE_FILE_EXT and not symlink:
+                print(page)
+
+class ListAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        list_pages()
+        parser.exit()
+
 def parse_arguments():
     global ARGS
     no_color_env = "NO_COLOR" in os.environ
@@ -67,6 +82,7 @@ def parse_arguments():
                                                                                   "shortcut-pages on Github.\n")
     parser.add_argument("-V", "--version", help="Displays the current version", action="version", version=VERSION)
     parser.add_argument("-m", "--meta", help="Includes the metadata/comments included on a page", action="store_true")
+    parser.add_argument("-l", "--list", help="Lists all pages accessible", action=ListAction, nargs="?")
     parser.add_argument("--no-colors", help="Disables colored output", action="store_true", default=no_color_env)
     parser.add_argument("--raw", help="Show the raw, unformatted output", action="store_true")
     parser.add_argument("page", help="Name of the page to lookup")
@@ -75,6 +91,7 @@ def parse_arguments():
 
 def main():
     parse_arguments()
+    list_pages()
     result = read_page(ARGS.page)
     print(result if ARGS.raw else parse_md(result))
     return 0
